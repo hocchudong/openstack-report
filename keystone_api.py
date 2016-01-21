@@ -1,7 +1,6 @@
 from common import get_api
 import json
 from flask import Flask,session,render_template,url_for,redirect,request
-tenant_name='admin'
 def get_token(tenant_name,username,password,hostname,keystone_port):
     header = {'Content-Type':'application/json'}
     params = json.dumps({"auth": {"tenantName":tenant_name,"passwordCredentials": {"username": username,"password": password}}})
@@ -15,7 +14,20 @@ def get_token(tenant_name,username,password,hostname,keystone_port):
     if response.status == 400:
         session['error'] = 'Incorect username/password check again'
         return redirect(url_for('login',error =error))
-def get_endpoint(service,username,password,hostname,keystone_port):
+def get_token_byID(tenant_id,username,password,hostname,keystone_port):
+    header = {'Content-Type':'application/json'}
+    params = json.dumps({"auth": {"tenantId":tenant_id,"passwordCredentials": {"username": username,"password": password}}})
+    method ='POST'
+    path = '/v2.0/tokens'
+    response = get_api(method,path,params,header,hostname,keystone_port)
+    if response.status == 200:
+        data = json.loads(response.read())
+        token = data['access']['token']['id']
+        return token
+    if response.status == 400:
+        session['error'] = 'Incorect username/password check again'
+        return redirect(url_for('login',error =error))
+def get_endpoint(tenant_name,service,username,password,hostname,keystone_port):
     header = {'Content-Type':'application/json'}
     params = json.dumps({"auth": {"tenantName":tenant_name,"passwordCredentials": {"username": username,"password": password}}})
     method ='POST'

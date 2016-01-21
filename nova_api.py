@@ -45,12 +45,23 @@ def get_compute_statistics(tenant_id,token,hostname,nova_port):
     if response.status == 400:
         error = 'Time out'
         return redirect(url_for('login',error = error))
-
+def get_tenant_usage(tenant_admin_id,tenant_id,token,hostname,nova_port):
+    header= {'Content-Type':'application/json','X-Auth-Token': token}
+    method = 'GET'
+    params = ''
+    path = '/v2/'+tenant_admin_id+'/os-simple-tenant-usage/'+tenant_id
+    response = get_api(method,path,params,header,hostname,nova_port)
+    if response.status == 200:
+        tenant_usage  = json.loads(response.read())
+        return tenant_usage
+    if response.status == 400:
+        error = 'Time out'
+        return redirect(url_for('login',error = error))
 #check service nova
 def check_nova_service(token,tenant_id,username,password,hostname,keystone_port):
     nova_service = []
     status = {}
-    compute_endpoint = get_endpoint('nova',username,password,hostname,keystone_port)    
+    compute_endpoint = get_endpoint('admin','nova',username,password,hostname,keystone_port)    
     try:
         nova = nova_client('2',auth_token=token,bypass_url=compute_endpoint)        
         services = nova.services.list()
