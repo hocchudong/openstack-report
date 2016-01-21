@@ -3,7 +3,7 @@ from flask.ext.bootstrap import Bootstrap
 import httplib,json
 
 from common import get_api
-from keystone_api import (get_token,get_endpoint,get_tenant_id,get_tenant_list)
+from keystone_api import (get_token,get_endpoint,get_tenant_id,get_tenant_list,get_token_byID)
 from nova_api import (get_server_list,get_compute_list,get_compute_statistics,check_nova_service,get_tenant_usage)
 
 from neutron_api import (check_neutron_service,get_ports,get_network)
@@ -108,9 +108,19 @@ def services():
     nova_service = check_nova_service(token = token,tenant_id =id_tenant_admin,username=username,password=password,hostname=hostname,keystone_port=keystone_port)
     neutron_agents = check_neutron_service(token= token,tenant_id = id_tenant_admin,username=username,password=password,hostname=hostname,keystone_port=keystone_port)
     return render_template("services.html",nova_service = nova_service,neutron_agents = neutron_agents)
-@app.route("/ip")
-def show_ip():
+@app.route("/instances")
+def show_instance():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))    
     token= session.get('token')
+    if token != None:
+        id_tenant_admin = get_tenant_id(token,hostname,keystone_port,'admin')
+        instances_list = get_server_list(id_tenant_admin,token,hostname,nova_port)
+        return render_template("instances.html",instances_list = instances_list,network_public_name=network_public_name)                                
+    else:
+        error = 'Time Out'
+        return redirect(url_for('login', error = error))        
+    
 @app.route("/tenant")
 def tenant_usage():
     if not session.get('logged_in'):

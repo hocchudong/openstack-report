@@ -1,0 +1,34 @@
+{% extends "base.html" %}\
+{% block content %}
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><div>
+  <h4> Instance List </h4>
+  <!-- Table -->
+  <table class="table">
+   <tr>
+    <th>Name</th>
+    <th>Host</th> 
+    <th>IP</th>
+    <th>Tenant/Project</th>
+    <th>Status</th>
+  </tr>
+  {% for row in range(instances_list['servers']|length) %}
+  	<tr>
+  	<td>{{ instances_list['servers'][row]['name'] }}</td>
+ 	<td>{{ instances_list['servers'][row]['OS-EXT-SRV-ATTR:hypervisor_hostname']}}</td>
+ 	<td>
+ 		{% if network_public_name in instances_list['servers'][row]['addresses'] %}
+ 		{% for ip in range(instances_list['servers'][row]['addresses']) %}
+ 		{% instances_list['servers'][row]['addresses']['network_public_name'][ip]['addr'] %}
+ 		{% endfor }
+ 		{% endif %}
+ 	</td>
+	<td> {{ instances_list['servers'][row]['tenant_id'] }}</td>
+ 	<td>{{ instances_list['servers'][row]['status']}}</td>
+  </tr>	
+  
+  {% endfor %}
+
+</div>
+{% endblock %}

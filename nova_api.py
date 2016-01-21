@@ -9,7 +9,7 @@ def get_server_list(tenant_id,token,hostname,nova_port):
     header= {'Content-Type':'application/json','X-Auth-Token': token}
     method = 'GET'
     params = ''
-    path = '/v2/'+tenant_id+'/servers'
+    path = '/v2/'+tenant_id+'/servers/detail?all_tenants=1'
     response = get_api(method,path,params,header,hostname,nova_port)
     if response.status == 200:
         servers_list  = json.loads(response.read())
