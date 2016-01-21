@@ -1,8 +1,5 @@
 flask
 flask-bootstrap
-ipaddr
-requests
-lxml
 python-cinderclient
 python-glanceclient
 python-heatclient
