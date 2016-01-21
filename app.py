@@ -115,6 +115,7 @@ def show_instance():
     token= session.get('token')
     if token != None:
         id_tenant_admin = get_tenant_id(token,hostname,keystone_port,'admin')
+
         instances_list = get_server_list(id_tenant_admin,token,hostname,nova_port)
         return render_template("instances.html",instances_list = instances_list,network_public_name=network_public_name)                                
     else:
@@ -151,8 +152,7 @@ def tenant_usage():
                 vcpus_used = 0
                 rams_used = 0
                 disks_used = 0
-                tenant_usage['tenant_usage'] = {"instances":instances,"rams_used":rams_used,"disks_used":disks_used,"vcpus_used":vcpus_used}
-            print tenant_usage
+                tenant_usage['tenant_usage'] = {"instances":instances,"rams_used":rams_used,"disks_used":disks_used,"vcpus_used":vcpus_used}            
             all_tenant_usage.append(tenant_usage.copy())
         return render_template("tenant.html",all_tenant_usage=all_tenant_usage)
     else:

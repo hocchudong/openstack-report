@@ -19,9 +19,9 @@
  	<td>{{ instances_list['servers'][row]['OS-EXT-SRV-ATTR:hypervisor_hostname']}}</td>
  	<td>
  		{% if network_public_name in instances_list['servers'][row]['addresses'] %}
- 		{% for ip in range(instances_list['servers'][row]['addresses']) %}
- 		{% instances_list['servers'][row]['addresses']['network_public_name'][ip]['addr'] %}
- 		{% endfor }
+ 		{% for ip in range(instances_list['servers'][row]['addresses'][network_public_name]|length ) %}
+ 		{% instances_list['servers'][row]['addresses'][network_public_name][ip]['addr'] %}
+ 		{% endfor %}
  		{% endif %}
  	</td>
 	<td> {{ instances_list['servers'][row]['tenant_id'] }}</td>
