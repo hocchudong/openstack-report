@@ -17,6 +17,9 @@
    <a href = "/?show=all" class = "btn btn-success" role = "button">
       Show each compute node
    </a>
+   {% if alert != None %}
+   <div class="alert alert-info" role="alert">{{ alert }}</div>
+   {% endif %}
 {% if total %}
 
 <div class="panel panel-default">
@@ -118,9 +121,27 @@
       </div>
     </div>
      <div class="col-xs-6 col-md-3">
-                              <a href = "/reports?node=all&ram_used={{ compute_list['hypervisor_statistics']['memory_mb_used']}}&ram_total={{ compute_list['hypervisor_statistics']['memory_mb']}}&cpu_used={{ compute_list['hypervisor_statistics']['vcpus_used'] }}&cpu_total={{ compute_list['hypervisor_statistics']['vcpus']  }}&hdd_free={{compute_list['hypervisor_statistics']['free_disk_gb']}}&hdd_total={{ compute_list['hypervisor_statistics']['local_gb'] }}" class = "btn btn-info" role = "button">
-                                Reports Total Usage
-                              </a>                           
+                               <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Reports Total Usage</button>
+                               <div class="modal fade" id="myModal" role="dialog">
+                                <div class="modal-dialog modal-lg">
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Report to System Admin or Your Boss</h4>
+                                      </div>
+                                      <div class="modal-body">
+                                       <form role="form" method="post" action="/?node=all&ram_used={{ compute_list['hypervisor_statistics']['memory_mb_used']}}&ram_total={{ compute_list['hypervisor_statistics']['memory_mb']}}&cpu_used={{ compute_list['hypervisor_statistics']['vcpus_used'] }}&cpu_total={{ compute_list['hypervisor_statistics']['vcpus']  }}&hdd_free={{compute_list['hypervisor_statistics']['free_disk_gb']}}&hdd_total={{ compute_list['hypervisor_statistics']['local_gb'] }}&instances={{compute_list['hypervisor_statistics']['running_vms'] }}">
+                                        <div class="form-group">
+                                          <label for="email">Email address:</label>
+                                          <input type="email" class="form-control" name='email' id="email" placeholder="email@example.com">
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Send Now!</button>
+                                      </form>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                                
                               <div class="panel panel-green" style="margin-bottom: 0px;" >
                                 <div class="panel-heading">
                                   <div class="row">
@@ -276,9 +297,26 @@
       </div>
     </div>
      <div class="col-xs-6 col-md-3">
-                               <a href = "/reports?node={{ compute_list[node]['hypervisor']['hypervisor_hostname']}}&ram_used={{ compute_list[node]['hypervisor']['memory_mb_used']}}&ram_total={{ compute_list[node]['hypervisor']['memory_mb']}}&cpu_used={{ compute_list[node]['hypervisor']['vcpus_used'] }}&cpu_total={{ compute_list[node]['hypervisor']['vcpus']  }}&hdd_free={{compute_list[node]['hypervisor']['free_disk_gb']}}&hdd_total={{ compute_list[node]['hypervisor']['local_gb'] }}" class = "btn btn-info" role = "button">
-                                Reports {{ compute_list[node]['hypervisor']['hypervisor_hostname']}}
-                              </a>
+                              <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}"> Reports {{ compute_list[node]['hypervisor']['hypervisor_hostname']}}</button>
+                               <div class="modal fade" id="myModal{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}" role="dialog">
+                                <div class="modal-dialog modal-lg">
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Report to System Admin or Your Boss</h4>
+                                      </div>
+                                      <div class="modal-body">
+                                       <form role="form" method="post" action="/?node={{ compute_list[node]['hypervisor']['hypervisor_hostname']}}&ram_used={{ compute_list[node]['hypervisor']['memory_mb_used']}}&ram_total={{ compute_list[node]['hypervisor']['memory_mb']}}&cpu_used={{ compute_list[node]['hypervisor']['vcpus_used'] }}&cpu_total={{ compute_list[node]['hypervisor']['vcpus']  }}&hdd_free={{compute_list[node]['hypervisor']['free_disk_gb']}}&hdd_total={{ compute_list[node]['hypervisor']['local_gb'] }}&instances={{compute_list[node]['hypervisor']['running_vms'] }}">
+                                        <div class="form-group">
+                                          <label for="email">Email address:</label>
+                                          <input type="email" class="form-control" name='email'  id="email" placeholder="email@example.com">
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Send Now!</button>
+                                      </form>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                               <div class="panel panel-green" style="margin-bottom: 0px;" >
                                 <div class="panel-heading">
                                   <div class="row">

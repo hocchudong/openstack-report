@@ -1,10 +1,9 @@
-from datetime import datetime
 
 from flask import Flask, session, render_template, url_for, redirect, request
 from flask.ext.bootstrap import Bootstrap
 
 from keystone_api import (get_token, get_tenant_id, get_tenant_list)
-from mail import send_mail
+from mail import (send_mail,reports)
 from neutron_api import (check_neutron_service, get_ports, get_network)
 from nova_api import (get_server_list, get_compute_list, get_compute_statistics, check_nova_service, get_tenant_usage)
 
@@ -39,7 +38,7 @@ mail_server_port = app.config['MAIL_SERVER_PORT']
 # your mail
 sender = app.config['SENDER']
 password_sender = app.config['PASSWORD_SENDER']
-receiver = app.config['RECEIVER']
+
 
 # config neutron
 network_public_name = app.config['NETWORK_PUBLIC_NAME']
@@ -73,58 +72,6 @@ def logout():
     return redirect(url_for("login"))
 
 
-## Report resource to mail. using email in config file
-
-@app.route("/reports", methods=['GET', 'POST'])
-def reports():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    node = request.args.get('node')
-    print node
-    cpu_used = request.args.get('cpu_used')
-    print type(cpu_used)
-    cpu_used = int(cpu_used)
-    
-    cpu_total = request.args.get('cpu_total')
-    cpu_total = int(cpu_total)
-    
-    ram_used =request.args.get('ram_used')
-    ram_used = int(ram_used)
-    
-    ram_total = request.args.get('ram_total')
-    ram_total = int(ram_total)
-
-    hdd_free = request.args.get('hdd_free')
-    hdd_free = int(hdd_free)
-
-    hdd_total = request.args.get('hdd_total')
-    hdd_total = int(hdd_total)
-    
-    now = datetime.now()
-    alert = None
-    if request.method == 'POST':
-        received = request.form['email']       
-        
-        body = """
-        Report at %s  
-        Node: %s     
-        CPU cores used: %d cores
-        CPU cores Total: %d cores
-        RAM Free: %d MB
-        RAM Used: %d MB
-        RAM Total: %d MB
-        Disk Used: %d GB
-        Disk Free: %d GB
-        Disk Total: %d GB
-        """ % (
-            now, node,cpu_used, cpu_total, ram_total - ram_used, ram_used, ram_total, hdd_total - hdd_free, hdd_free,
-            hdd_total)
-        if send_mail(mail_server, mail_server_port, sender, password_sender, received, body):
-            alert = 'Sent mail successful'
-
-    return render_template("reports.html", alert=alert)
-
-
 ## show all service status  in openstack
 
 @app.route("/services")
@@ -151,7 +98,8 @@ def show_instance():
         id_tenant_admin = get_tenant_id(token, hostname, keystone_port, 'admin')
 
         instances_list = get_server_list(id_tenant_admin, token, hostname, nova_port)
-        return render_template("instances.html", instances_list=instances_list, network_public_name=network_public_name)
+        return render_template("instances.html", instances_list=instances_list, 
+                                network_public_name=network_public_name)
     else:
         error = 'Time Out'
         return redirect(url_for('login', error=error))
@@ -173,8 +121,10 @@ def tenant_usage():
         for tenant in range(len(tenant_list['tenants'])):
             tenant_usage['name'] = tenant_list['tenants'][tenant]['name']
             tenant_usage['id'] = tenant_list['tenants'][tenant]['id']
-            tenant_usage_detail = get_tenant_usage(tenant_admin_id, tenant_list['tenants'][tenant]['id'], token,
-                                                   hostname, nova_port)  # get instance in tenant
+            
+            tenant_usage_detail = get_tenant_usage(tenant_admin_id, tenant_list['tenants'][tenant]['id'], 
+                                                    token,hostname, nova_port)  # get instance in tenant
+
             if 'server_usages' in tenant_usage_detail['tenant_usage']:
                 instances = len(tenant_usage_detail['tenant_usage']['server_usages'])
                 vcpus_used = 0
@@ -205,13 +155,30 @@ def tenant_usage():
 
 ## index show resource from total compute or each compute
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/", methods=['GET','POST'])
 def index():
     all = True
+    alert = None
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     token = session.get('token')
     if token != None:
+        if request.method=='POST':
+
+            email = request.form.get('email')
+            node = request.args.get('node')          
+            cpu_used = int(request.args.get('cpu_used'))
+            cpu_total = int(request.args.get('cpu_total'))
+            ram_used =int(request.args.get('ram_used'))         
+            ram_total = int(request.args.get('ram_total'))          
+            hdd_free = int(request.args.get('hdd_free'))
+            hdd_total = int(request.args.get('hdd_total'))
+            instances = int(request.args.get('instances'))
+            
+            alert = reports(node,cpu_used,cpu_total,ram_total,ram_used,
+                            hdd_total,hdd_free,instances,email,mail_server,
+                            mail_server_port,sender,password_sender)
+
         id_tenant_admin = get_tenant_id(token, hostname, keystone_port, 'admin')  # get ID of tenant Admin
         ports = get_ports(token, hostname, neutron_port)  # get all ports details
         networks_list = get_network(token, hostname, neutron_port)  # get all network list
@@ -233,10 +200,12 @@ def index():
                 info = get_compute_list(id_tenant_admin, token, hostname, nova_port,
                                         str(list_node['hypervisors'][i]['id']))
                 compute_list.append(info)
-            return render_template("index.html", compute_list=compute_list, ip_used=ip_used, total=False)
+            return render_template("index.html", compute_list=compute_list, 
+                                    ip_used=ip_used, total=False,alert =alert)
         else:
             compute_list = get_compute_statistics(id_tenant_admin, token, hostname, nova_port)
-            return render_template("index.html", compute_list=compute_list, ip_used=ip_used, total=True)
+            return render_template("index.html", compute_list=compute_list, 
+                                    ip_used=ip_used, total=True,alert = alert)
     else:
         error = 'Time Out'
         return redirect(url_for('login', error=error))

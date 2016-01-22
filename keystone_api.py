@@ -17,7 +17,7 @@ def get_token(tenant_name, username, password, hostname, keystone_port):
         token = data['access']['token']['id']
         return token
     if response.status == 400:
-        session['error'] = 'Incorect username/password check again'
+        error = 'Incorect username/password check again'
         return redirect(url_for('login', error=error))
 
 
@@ -33,7 +33,7 @@ def get_token_byID(tenant_id, username, password, hostname, keystone_port):
         token = data['access']['token']['id']
         return token
     if response.status == 400:
-        session['error'] = 'Incorect username/password check again'
+        error = 'Incorect username/password check again'
         return redirect(url_for('login', error=error))
 
 
@@ -51,7 +51,7 @@ def get_endpoint(tenant_name, service, username, password, hostname, keystone_po
                 endpoint = data['access']['serviceCatalog'][i]['endpoints'][0]['adminURL']
                 return endpoint
     if response.status == 400:
-        session['error'] = 'Incorect username/password check again'
+        error = 'Incorect username/password check again'
         return redirect(url_for('login', error=error))
 
 
