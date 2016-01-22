@@ -79,23 +79,35 @@ def logout():
 def reports():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    token = session.get('token')
+    node = request.args.get('node')
+    print node
+    cpu_used = request.args.get('cpu_used')
+    print type(cpu_used)
+    cpu_used = int(cpu_used)
+    
+    cpu_total = request.args.get('cpu_total')
+    cpu_total = int(cpu_total)
+    
+    ram_used =request.args.get('ram_used')
+    ram_used = int(ram_used)
+    
+    ram_total = request.args.get('ram_total')
+    ram_total = int(ram_total)
+
+    hdd_free = request.args.get('hdd_free')
+    hdd_free = int(hdd_free)
+
+    hdd_total = request.args.get('hdd_total')
+    hdd_total = int(hdd_total)
+    
+    now = datetime.now()
     alert = None
     if request.method == 'POST':
-        received = request.form['email']
-        id_tenant_admin = get_tenant_id(token, hostname, keystone_port, 'admin')
-        compute_list = get_compute_statistics(id_tenant_admin, token, hostname, nova_port)
-
-        cpu_used = compute_list['hypervisor_statistics']['vcpus_used']
-        cpu_total = compute_list['hypervisor_statistics']['vcpus']
-        ram_used = compute_list['hypervisor_statistics']['memory_mb_used']
-        ram_total = compute_list['hypervisor_statistics']['memory_mb']
-        hdd_free = compute_list['hypervisor_statistics']['free_disk_gb']
-        hdd_total = compute_list['hypervisor_statistics']['local_gb']
-        now = str(datetime.now())
-
+        received = request.form['email']       
+        
         body = """
-        Report at %s       
+        Report at %s  
+        Node: %s     
         CPU cores used: %d cores
         CPU cores Total: %d cores
         RAM Free: %d MB
@@ -105,7 +117,7 @@ def reports():
         Disk Free: %d GB
         Disk Total: %d GB
         """ % (
-            now, cpu_used, cpu_total, ram_total - ram_used, ram_used, ram_total, hdd_total - hdd_free, hdd_free,
+            now, node,cpu_used, cpu_total, ram_total - ram_used, ram_used, ram_total, hdd_total - hdd_free, hdd_free,
             hdd_total)
         if send_mail(mail_server, mail_server_port, sender, password_sender, received, body):
             alert = 'Sent mail successful'
