@@ -20,6 +20,12 @@
 
 - Khai báo username, và password gmail (hỗ trợ gmail)
 
+- Mở terminal gõ
+
+`python app.py`
+
+- vào trình duyệt tại đường dẫn `localhost:5000`
+
 
 ### Một vài hình ảnh Openstack Resource Monitors 
 
