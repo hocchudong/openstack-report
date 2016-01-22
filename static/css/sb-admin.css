@@ -13,10 +13,12 @@ body {
 
 @media(min-width:768px) {
     body {
-        margin-top: 50px;
+        margin-top: 0px;
     }
 }
-
+#used {
+    color:#F7464A;
+}
 #wrapper {
     padding-left: 0;
 }
