@@ -4,7 +4,7 @@ import json
 def get_volumes_list(tenant_id, token, hostname, cinder_port):
     method = 'GET'
     params = ''
-    path = '/v2/'+tenant_id+'/volumes'
+    path = '/v2/'+tenant_id+'/volumes?all_tenants=1'
     header = {'Content-Type': 'application/json', 'X-Auth-Token': token}
     response = get_api(method, path, params, header, hostname, cinder_port)
     if response.status == 200:

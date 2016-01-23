@@ -130,7 +130,7 @@
                                         <h4 class="modal-title">Report to System Admin or Your Boss</h4>
                                       </div>
                                       <div class="modal-body">
-                                       <form role="form" method="post" action="/?node=all&ram_used={{ compute_list['hypervisor_statistics']['memory_mb_used']}}&ram_total={{ compute_list['hypervisor_statistics']['memory_mb']}}&cpu_used={{ compute_list['hypervisor_statistics']['vcpus_used'] }}&cpu_total={{ compute_list['hypervisor_statistics']['vcpus']  }}&hdd_free={{compute_list['hypervisor_statistics']['free_disk_gb']}}&hdd_total={{ compute_list['hypervisor_statistics']['local_gb'] }}&instances={{compute_list['hypervisor_statistics']['running_vms'] }}">
+                                       <form role="form" method="post" action="/?node=all&ram_used={{ compute_list['hypervisor_statistics']['memory_mb_used']}}&ram_total={{ compute_list['hypervisor_statistics']['memory_mb']}}&cpu_used={{ compute_list['hypervisor_statistics']['vcpus_used'] }}&cpu_total={{ compute_list['hypervisor_statistics']['vcpus']  }}&hdd_free={{compute_list['hypervisor_statistics']['free_disk_gb']}}&hdd_total={{ compute_list['hypervisor_statistics']['local_gb'] }}&instances={{compute_list['hypervisor_statistics']['running_vms'] }}&volumes={{ volumes['volumes']|length }}">
                                         <div class="form-group">
                                           <label for="email">Email address:</label>
                                           <input type="email" class="form-control" name='email' id="email" placeholder="email@example.com">

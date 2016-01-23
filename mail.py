@@ -41,9 +41,11 @@ def reports(node,cpu_used,cpu_total,ram_total,ram_used,hdd_total,hdd_free,
     Disk Free: %d GB
     Disk Total: %d GB
     Instances: %d
+    Volumes: %d
     """ % (
         now, node,cpu_used, cpu_total, ram_total - ram_used, ram_used, ram_total, hdd_total - hdd_free, hdd_free,
-        hdd_total,instances)
+        hdd_total,instances,Volumes)
+    
     if send_mail(mail_server,   mail_server_port, sender, password_sender, received, body):
         alert = 'Sent mail successful'
         return alert

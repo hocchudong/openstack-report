@@ -177,9 +177,9 @@ def index():
             hdd_free = int(request.args.get('hdd_free'))
             hdd_total = int(request.args.get('hdd_total'))
             instances = int(request.args.get('instances'))
-            
+            volumes = int(request.args.get('volumes'))
             alert = reports(node,cpu_used,cpu_total,ram_total,ram_used,
-                            hdd_total,hdd_free,instances,email,mail_server,
+                            hdd_total,hdd_free,instances,volumes,email,mail_server,
                             mail_server_port,sender,password_sender)
 
         id_tenant_admin = get_tenant_id(token, hostname, keystone_port, 'admin')  # get ID of tenant Admin
