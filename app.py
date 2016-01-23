@@ -6,6 +6,8 @@ from keystone_api import (get_token, get_tenant_id, get_tenant_list)
 from mail import (send_mail,reports)
 from neutron_api import (check_neutron_service, get_ports, get_network)
 from nova_api import (get_server_list, get_compute_list, get_compute_statistics, check_nova_service, get_tenant_usage)
+from cinder_api import (get_volumes_list)
+
 
 # default Variable
 username = None
@@ -30,6 +32,7 @@ app.config.from_pyfile('config.py')
 keystone_port = app.config['KEYSTONE_PORT']
 nova_port = app.config['NOVA_PORT']
 neutron_port = app.config['NEUTRON_PORT']
+cinder_port = app.config['CINDER_PORT']
 
 ## config email
 mail_server = app.config['MAIL_SERVER']
@@ -203,9 +206,10 @@ def index():
             return render_template("index.html", compute_list=compute_list, 
                                     ip_used=ip_used, total=False,alert =alert)
         else:
+            volumes = get_volumes_list(id_tenant_admin, token, hostname, cinder_port)
             compute_list = get_compute_statistics(id_tenant_admin, token, hostname, nova_port)
             return render_template("index.html", compute_list=compute_list, 
-                                    ip_used=ip_used, total=True,alert = alert)
+                                    ip_used=ip_used, volumes=volumes,total=True,alert = alert)
     else:
         error = 'Time Out'
         return redirect(url_for('login', error=error))

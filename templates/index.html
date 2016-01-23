@@ -6,9 +6,9 @@
     <!-- Custom CSS -->
     <link href="static/css/sb-admin.css" rel="stylesheet">
 
-  
-
-{% endblock %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    
+{% endblock %}    
 {% block content %}
 
   <a href = "/?show=total" class = "btn btn-primary" role = "button">
@@ -142,11 +142,11 @@
                                   </div>
                                 </div>
                                                 
-                              <div class="panel panel-green" style="margin-bottom: 0px;" >
+                              <div class="panel panel-green" style="margin-bottom: 0px; float:left;" >
                                 <div class="panel-heading">
                                   <div class="row">
                                     <div class="col-xs-3">
-                                        <i class="fa fa-tasks fa-5x" width="100" height="20"></i>
+                                        <i class="fa fa-server fa-3x" ></i>
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">{{compute_list['hypervisor_statistics']['running_vms'] }}</div>
@@ -155,11 +155,24 @@
                                 </div>
                               </div>                              
                              </div> 
-                             <div class="panel panel-red" style="margin-bottom: 0px;" >  
+                             <div class="panel panel-green" style="margin-bottom: 0px; float:right;" >
                                 <div class="panel-heading">
                                   <div class="row">
                                     <div class="col-xs-3">
-                                        <i class="fa fa-tasks fa-5x"></i>
+                                        <i class="fa  fa-hdd-o fa-3x" ></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">{{ volumes['volumes']|length }}</div>
+                                        <b>Volumes  </b>
+                                    </div>
+                                </div>
+                              </div>                              
+                             </div> 
+                             <div class="panel panel-red" style="margin-bottom: 0px; float:left;" >  
+                                <div class="panel-heading">
+                                  <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa  fa-wifi fa-3x"></i>
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">{{ ip_used }}</div>
@@ -321,7 +334,7 @@
                                 <div class="panel-heading">
                                   <div class="row">
                                     <div class="col-xs-3">
-                                        <i class="fa fa-tasks fa-5x"></i>
+                                        <i class="fa fa-server fa-3x"></i>
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">{{compute_list[node]['hypervisor']['running_vms'] }}</div>
@@ -334,7 +347,7 @@
                                 <div class="panel-heading">
                                   <div class="row">
                                     <div class="col-xs-3">
-                                        <i class="fa fa-tasks fa-5x"></i>
+                                        <i class="fa  fa-wifi fa-3x"></i>
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">{{ ip_used }}</div>
