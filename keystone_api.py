@@ -4,6 +4,7 @@ from flask import session, url_for, redirect
 
 from common import get_api
 
+# GET token using username and password and tenant_name
 
 def get_token(tenant_name, username, password, hostname, keystone_port):
     header = {'Content-Type': 'application/json'}
@@ -21,22 +22,8 @@ def get_token(tenant_name, username, password, hostname, keystone_port):
         return redirect(url_for('login', error=error))
 
 
-def get_token_byID(tenant_id, username, password, hostname, keystone_port):
-    header = {'Content-Type': 'application/json'}
-    params = json.dumps(
-            {"auth": {"tenantId": tenant_id, "passwordCredentials": {"username": username, "password": password}}})
-    method = 'POST'
-    path = '/v2.0/tokens'
-    response = get_api(method, path, params, header, hostname, keystone_port)
-    if response.status == 200:
-        data = json.loads(response.read())
-        token = data['access']['token']['id']
-        return token
-    if response.status == 400:
-        error = 'Incorect username/password check again'
-        return redirect(url_for('login', error=error))
 
-
+## get endpoint using service name
 def get_endpoint(tenant_name, service, username, password, hostname, keystone_port):
     header = {'Content-Type': 'application/json'}
     params = json.dumps(
@@ -55,13 +42,16 @@ def get_endpoint(tenant_name, service, username, password, hostname, keystone_po
         return redirect(url_for('login', error=error))
 
 
-# def get_hostname_port(AUTH_URL):
+
+# get id tenant using tenant name
+
 def get_tenant_id(token, hostname, keystone_port, tenant_name):
     tenants_list = get_tenant_list(token, hostname, keystone_port)
     for i in range(len(tenants_list['tenants'])):
         if tenants_list['tenants'][i]['name'] == tenant_name:
             return tenants_list['tenants'][i]['id']
 
+# get tenant list in your openstack
 
 def get_tenant_list(token, hostname, keystone_port):
     header = {'Content-Type': 'application/json', 'X-Auth-Token': token}

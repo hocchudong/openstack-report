@@ -18,6 +18,7 @@ def check_neutron_service(token, tenant_id, hostname, keystone_port, username, p
     agents = agents['agents']
     return agents
 
+# get all port are using 
 
 def get_ports(token, hostname, neutron_port):
     method = 'GET'
@@ -32,6 +33,7 @@ def get_ports(token, hostname, neutron_port):
         error = 'Time out'
         return redirect(url_for('login', error=error))
 
+# get lish network in your openstack 
 
 def get_network(token, hostname, neutron_port):
     method = 'GET'

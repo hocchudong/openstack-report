@@ -185,16 +185,8 @@ def index():
         id_tenant_admin = get_tenant_id(token, hostname, keystone_port, 'admin')  # get ID of tenant Admin
         ports = get_ports(token, hostname, neutron_port)  # get all ports details
         networks_list = get_network(token, hostname, neutron_port)  # get all network list
-        for net in range(len(networks_list['networks'])):
-            if networks_list['networks'][net]['name'] == network_public_name:
-                global network_public_id
-                network_public_id = networks_list['networks'][net]['id']
-                global ip_used
-                ip_used = 0
-                for ip in range(len(ports['ports'])):
-                    if ports['ports'][ip][
-                        'network_id'] == network_public_id:  # if network in instance match with network public
-                        ip_used = ip_used + 1
+        global network_public_id
+        network_public_id = networks_list['networks'][net]['id']
 
         if request.args.get('show') == 'all':  # display all compute list
             compute_list = []
@@ -202,10 +194,27 @@ def index():
             for i in range(len(list_node['hypervisors'])):
                 info = get_compute_list(id_tenant_admin, token, hostname, nova_port,
                                         str(list_node['hypervisors'][i]['id']))
-                compute_list.append(info)
+
+                compute_name = list_node['hypervisors'][i]['hypervisor_hostname']
+                global ip_used
+                ip_used = 0
+                for ip in range(len(ports['ports'])):
+                    if ports['ports'][ip]['network_id'] == network_public_id
+                        and ports['ports'][ip]['binding:host_id'] == compute_name:  # if network in instance match with network public
+                        ip_used = ip_used + 1
+                info['ip_used'] = ip_used
+                compute_list.append(info.copy)
             return render_template("index.html", compute_list=compute_list, 
-                                    ip_used=ip_used, total=False,alert =alert)
+                                     total=False,alert =alert)
         else:
+            for net in range(len(networks_list['networks'])):
+            if networks_list['networks'][net]['name'] == network_public_name:                
+                global ip_used
+                ip_used = 0
+                for ip in range(len(ports['ports'])):
+                    if ports['ports'][ip][
+                        'network_id'] == network_public_id:  # if network in instance match with network public
+                        ip_used = ip_used + 1
             volumes = get_volumes_list(id_tenant_admin, token, hostname, cinder_port)
             compute_list = get_compute_statistics(id_tenant_admin, token, hostname, nova_port)
             return render_template("index.html", compute_list=compute_list, 
