@@ -207,10 +207,10 @@ def index():
                                      total=False,alert =alert)
         else:
             ip_used = 0
-                for ip in range(len(ports['ports'])):
-                    if ports['ports'][ip][
-                        'network_id'] == network_public_id:  # if network in instance match with network public
-                        ip_used = ip_used + 1
+            for ip in range(len(ports['ports'])):
+                if ports['ports'][ip][
+                    'network_id'] == network_public_id:  # if network in instance match with network public
+                    ip_used = ip_used + 1
             volumes = get_volumes_list(id_tenant_admin, token, hostname, cinder_port)
             compute_list = get_compute_statistics(id_tenant_admin, token, hostname, nova_port)
             return render_template("index.html", compute_list=compute_list, 
