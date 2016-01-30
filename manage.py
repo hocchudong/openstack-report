@@ -8,7 +8,7 @@ from neutron_api import (check_neutron_service, get_ports, get_network)
 from nova_api import (get_server_list, get_compute_list, get_compute_statistics, check_nova_service, get_tenant_usage)
 from cinder_api import (get_volumes_list)
 
-
+import os
 # default Variable
 username = None
 password = None
@@ -224,4 +224,5 @@ def index():
 ## run app
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
