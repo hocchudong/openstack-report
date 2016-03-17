@@ -181,7 +181,10 @@ def index():
             hdd_free = int(request.args.get('hdd_free'))
             hdd_total = int(request.args.get('hdd_total'))
             instances = int(request.args.get('instances'))
-            volumes = int(request.args.get('volumes'))
+            if node == "all":
+                volumes = int(request.args.get('volumes'))
+            else:
+                volumes = 0
             alert = reports(node,cpu_used,cpu_total,ram_total,ram_used,
                             hdd_total,hdd_free,instances,volumes,email,mail_server,
                             mail_server_port,sender,password_sender)
@@ -208,6 +211,7 @@ def index():
                         ip_used = ip_used + 1
                 info['ip_used'] = ip_used
                 compute_list.append(info)
+                print compute_list
             return render_template("index.html", compute_list=compute_list, 
                                      total=False,alert =alert)
         else:
