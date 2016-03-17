@@ -22,7 +22,7 @@
 
 - Mở terminal gõ
 
-`python app.py`
+`python main.py`
 
 - vào trình duyệt tại đường dẫn `localhost:5000`
 
