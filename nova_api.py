@@ -74,12 +74,16 @@ def get_tenant_usage(tenant_admin_id, tenant_id, token, hostname, nova_port):
 # check service nova
 
 def check_nova_service(token, tenant_id, username, password, hostname, keystone_port):
+    print "ok"
+    print token
     nova_service = []
     status = {}
     compute_endpoint = get_endpoint('admin', 'nova', username, password, hostname, keystone_port)
+    print compute_endpoint
     try:
-        nova = nova_client('2', auth_token=token, bypass_url=compute_endpoint)
+        nova = nova_client('3', auth_token=token, bypass_url=compute_endpoint)
         services = nova.services.list()
+        print services
         for service in services:
             status['type-name'] = service.binary
             status['status'] = service.status
@@ -89,9 +93,11 @@ def check_nova_service(token, tenant_id, username, password, hostname, keystone_
             status['zone'] = service.zone
             nova_service.append(status)
             status = {}
+            print status
         return nova_service
     except Exception as e:
         error = str(e)
+        print error
     return nova_service
 
 

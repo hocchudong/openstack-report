@@ -25,8 +25,9 @@ def send_mail(mail_server, mail_server_port, sender, password_sender, received, 
 
 ## Report resource to mail. using email in config file
 
+
 def reports(node,cpu_used,cpu_total,ram_total,ram_used,hdd_total,hdd_free,
-            instances,received,mail_server,mail_server_port,sender,password_sender):   
+            instances,volumes,received,mail_server,mail_server_port,sender,password_sender):   
     alert = None
     now = datetime.now()
     body = """
@@ -44,7 +45,7 @@ def reports(node,cpu_used,cpu_total,ram_total,ram_used,hdd_total,hdd_free,
     Volumes: %d
     """ % (
         now, node,cpu_used, cpu_total, ram_total - ram_used, ram_used, ram_total, hdd_total - hdd_free, hdd_free,
-        hdd_total,instances,Volumes)
+        hdd_total,instances,volumes)
     
     if send_mail(mail_server,   mail_server_port, sender, password_sender, received, body):
         alert = 'Sent mail successful'

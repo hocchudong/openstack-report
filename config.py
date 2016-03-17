@@ -9,8 +9,8 @@ MAIL_SERVER = 'smtp.gmail.com'
 MAIL_SERVER_PORT = 587
 
 # your mail
-SENDER 'yourmail'
-PASSWORD_SENDER = 'yourpasswd'
+SENDER = 'alert.hocchudong@gmail.com'
+PASSWORD_SENDER = 'PTCC@!2o015'
 RECEIVER = ''
 
 # config neutron
