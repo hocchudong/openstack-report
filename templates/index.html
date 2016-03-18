@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<script src="static/Chart.js"></script>
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="static/css/sb-admin.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    
+{% endblock %}    
+{% block content %}
+
+  <a href = "/?show=total" class = "btn btn-primary" role = "button">
+      Show total Usage
+   </a>
+   <a href = "/?show=all" class = "btn btn-success" role = "button">
+      Show each compute node
+   </a>
+   {% if alert != None %}
+   <div class="alert alert-info" role="alert">{{ alert }}</div>
+   {% endif %}
+{% if total %}
+
+<div class="panel panel-default">
+<div class="panel-body">
+   <div class="col-xs-6 col-md-3">
+      <div id="canvas-holder">
+      <canvas id="chart-area-ram" width="100" height="100"/>
+      </div>
+      <script>
+    var pieDataRam = [
+        {
+          value: {{ compute_list['hypervisor_statistics']['memory_mb_used'] }},
+          color:"#F7464A",
+          highlight: "#FF5A5E",
+          label: "Used"
+        },
+        {
+          value: {{ compute_list['hypervisor_statistics']['free_ram_mb']}},
+          color: "#46BFBD",
+          highlight: "#5AD3D1",
+          label: "Free"
+        }
+      ];
+      function pieChartRAM{{ compute_list['hypervisor_statistics']['hypervisor_hostname']}}(){
+        var ctx_ram = document.getElementById("chart-area-ram").getContext("2d");
+        window.myPie_ram = new Chart(ctx_ram).Pie(pieDataRam);
+      };
+  </script>
+
+
+     <div class="caption">
+      <h2> Ram </h2>
+      <h4 id="used"> Used: {{ compute_list['hypervisor_statistics']['memory_mb_used']}} MB</h4>
+      <h4 > Total: {{ compute_list['hypervisor_statistics']['memory_mb']}} MB</h4>
+    </div>
+  </div>
+
+  <!-- </div> -->
+  <div class="col-xs-6 col-md-3"> 
+       <div id="canvas-holder">
+      <canvas id="chart-area-cpu" width="100" height="100"/>
+      </div>
+      <script>
+    var pieDataCPU = [
+        {
+          value: {{ compute_list['hypervisor_statistics']['vcpus_used'] }},
+          color:"#F7464A",
+          highlight: "#FF5A5E",
+          label: "Used"
+        },
+        {
+          value: {{ compute_list['hypervisor_statistics']['vcpus'] - compute_list['hypervisor_statistics']['vcpus_used'] }},
+          color: "#46BFBD",
+          highlight: "#5AD3D1",
+          label: "Free"
+        }
+      ];
+      function pieChartCPU(){
+        var ctx_cpu = document.getElementById("chart-area-cpu").getContext("2d");
+        window.myPie_cpu = new Chart(ctx_cpu).Pie(pieDataCPU);
+      };
+  </script>
+     <div class="caption">
+      <h2> CPU </h2>
+      <h4 id='used' >CPU Core Used: {{ compute_list['hypervisor_statistics']['vcpus_used'] }}</h4>
+      <h4 id="free">CPU Core total: {{ compute_list['hypervisor_statistics']['vcpus']  }}</h4>
+    </div>
+  </div>
+
+
+   <div class="col-xs-6 col-md-3">
+          <div id="canvas-holder">
+           <canvas id="chart-area-hdd" width="100" height="100"/>
+          </div>
+      <script>
+    var pieDataHDD = [
+        {
+          value: {{ compute_list['hypervisor_statistics']['local_gb']-compute_list['hypervisor_statistics']['free_disk_gb'] }},
+          color:"#F7464A",
+          highlight: "#FF5A5E",
+          label: "Used"
+        },
+        {
+          value: {{ compute_list['hypervisor_statistics']['free_disk_gb']}},
+          color: "#46BFBD",
+          highlight: "#5AD3D1",
+          label: "Free"
+        }
+      ];
+      function pieChartHDD(){
+        var ctx_hdd = document.getElementById("chart-area-hdd").getContext("2d");
+        window.myPie_hdd = new Chart(ctx_hdd).Pie(pieDataHDD);
+      };
+     </script>
+       <div class="caption">
+          <h3> HDD </h3>
+          <h4 id="used"> Used: {{ compute_list['hypervisor_statistics']['local_gb']-compute_list['hypervisor_statistics']['free_disk_gb'] }} GB </h4>
+          <h4 > Total: {{ compute_list['hypervisor_statistics']['local_gb'] }} GB </h4>
+      </div>
+    </div>
+     <div class="col-xs-6 col-md-3">
+                               <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Reports Total Usage</button>
+                               <div class="modal fade" id="myModal" role="dialog">
+                                <div class="modal-dialog modal-lg">
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Report to System Admin or Your Boss</h4>
+                                      </div>
+                                      <div class="modal-body">
+                                       <form role="form" method="post" action="/?node=all&ram_used={{ compute_list['hypervisor_statistics']['memory_mb_used']}}&ram_total={{ compute_list['hypervisor_statistics']['memory_mb']}}&cpu_used={{ compute_list['hypervisor_statistics']['vcpus_used'] }}&cpu_total={{ compute_list['hypervisor_statistics']['vcpus']  }}&hdd_free={{compute_list['hypervisor_statistics']['free_disk_gb']}}&hdd_total={{ compute_list['hypervisor_statistics']['local_gb'] }}&instances={{compute_list['hypervisor_statistics']['running_vms'] }}&volumes={{ volumes['volumes']|length }}">
+                                        <div class="form-group">
+                                          <label for="email">Email address:</label>
+                                          <input type="email" class="form-control" name='email' id="email" placeholder="email@example.com">
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Send Now!</button>
+                                      </form>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                                
+                              <div class="panel panel-green" style="margin-bottom: 0px; float:left;" >
+                                <div class="panel-heading">
+                                  <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-server fa-3x" ></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">{{compute_list['hypervisor_statistics']['running_vms'] }}</div>
+                                        <b>Instances</b>
+                                    </div>
+                                </div>
+                              </div>                              
+                             </div> 
+                             <div class="panel panel-green" style="margin-bottom: 0px; float:right;" >
+                                <div class="panel-heading">
+                                  <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa  fa-hdd-o fa-3x" ></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">{{ volumes['volumes']|length }}</div>
+                                        <b>Volumes  </b>
+                                    </div>
+                                </div>
+                              </div>                              
+                             </div> 
+                             <div class="panel panel-red" style="margin-bottom: 0px; float:left;" >  
+                                <div class="panel-heading">
+                                  <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa  fa-wifi fa-3x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">{{ ip_used }}</div>
+                                        <b>IP Public used</b>
+                                    </div>
+                                </div>
+                              </div>
+                              <a href="/instances">
+                                <div class="panel-footer">
+                                    <span class="pull-left">View Details</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                              </a>                              
+                             </div> 
+
+      </div>
+
+
+  </div>
+</div>
+
+
+<script type="text/javascript">
+  function start(){
+
+    pieChartCPU();
+    pieChartRAM();
+    pieChartHDD();
+  }
+  window.onload = start;
+</script>
+
+
+{% else %}
+{% for node in range(compute_list|length) %}
+
+<div class="panel panel-default">
+<div class="panel-body">
+  
+   <div class="col-xs-6 col-md-3">
+      <div id="canvas-holder">
+      <canvas id="chart-area-ram-{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}" width="100" height="100"/>
+      </div>
+      <script>
+    var pieDataRam{{ compute_list[node]['hypervisor']['hypervisor_hostname']}} = [
+        {
+          value: {{ compute_list[node]['hypervisor']['memory_mb_used'] }},
+          color:"#F7464A",
+          highlight: "#FF5A5E",
+          label: "Used"
+        },
+        {
+          value: {{ compute_list[node]['hypervisor']['free_ram_mb']}},
+          color: "#46BFBD",
+          highlight: "#5AD3D1",
+          label: "Free"
+        }
+      ];
+      function pieChartRAM{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}(){
+        var ctx_ram = document.getElementById("chart-area-ram-{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}").getContext("2d");
+        window.myPie_ram = new Chart(ctx_ram).Pie(pieDataRam{{ compute_list[node]['hypervisor']['hypervisor_hostname']}});
+      };
+  </script>
+
+
+     <div class="caption">
+      <h2> Ram </h2>
+      <h4 id="used"> Used: {{ compute_list[node]['hypervisor']['memory_mb_used']}} MB</h4>
+      <h4> Total: {{ compute_list[node]['hypervisor']['memory_mb']}} MB</h4>
+    </div>
+  </div>
+
+  <!-- </div> -->
+  <div class="col-xs-6 col-md-3"> 
+       <div id="canvas-holder">
+      <canvas id="chart-area-cpu-{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}" width="100" height="100"/>
+      </div>
+      <script>
+    var pieDataCPU{{ compute_list[node]['hypervisor']['hypervisor_hostname']}} = [
+        {
+          value: {{ compute_list[node]['hypervisor']['vcpus_used'] }},
+          color:"#F7464A",
+          highlight: "#FF5A5E",
+          label: "Used"
+        },
+        {
+          value: {{ compute_list[node]['hypervisor']['vcpus'] - compute_list[node]['hypervisor']['vcpus_used'] }},
+          color: "#46BFBD",
+          highlight: "#5AD3D1",
+          label: "Free"
+        }
+      ];
+      function pieChartCPU{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}(){
+        var ctx_cpu = document.getElementById("chart-area-cpu-{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}").getContext("2d");
+        window.myPie_cpu = new Chart(ctx_cpu).Pie(pieDataCPU{{ compute_list[node]['hypervisor']['hypervisor_hostname']}});
+      };
+  </script>
+     <div class="caption">
+      <h2> CPU </h2>
+      <h4 id="used">CPU Core Used: {{ compute_list[node]['hypervisor']['vcpus_used'] }}</h4>
+      <h4>CPU Core total: {{ compute_list[node]['hypervisor']['vcpus']  }}</h4>
+    </div>
+  </div>
+
+
+   <div class="col-xs-6 col-md-3">
+          <div id="canvas-holder">
+           <canvas id="chart-area-hdd-{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}" width="100" height="100"/>
+          </div>
+      <script>
+    var pieDataHDD{{ compute_list[node]['hypervisor']['hypervisor_hostname']}} = [
+        {
+          value: {{ compute_list[node]['hypervisor']['local_gb']-compute_list[node]['hypervisor']['free_disk_gb'] }},
+          color:"#F7464A",
+          highlight: "#FF5A5E",
+          label: "Used"
+        },
+        {
+          value: {{ compute_list[node]['hypervisor']['free_disk_gb']}},
+          color: "#46BFBD",
+          highlight: "#5AD3D1",
+          label: "Free"
+        }
+      ];
+      function pieChartHDD{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}(){
+        var ctx_hdd = document.getElementById("chart-area-hdd-{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}").getContext("2d");
+        window.myPie_hdd = new Chart(ctx_hdd).Pie(pieDataHDD{{ compute_list[node]['hypervisor']['hypervisor_hostname']}});
+      };
+     </script>
+       <div class="caption">
+          <h3> HDD </h3>
+          <h4 id="used"> Used: {{ compute_list[node]['hypervisor']['local_gb']-compute_list[node]['hypervisor']['free_disk_gb'] }} GB </h4>
+          <h4> Total: {{ compute_list[node]['hypervisor']['local_gb'] }} GB </h4>
+      </div>
+    </div>
+     <div class="col-xs-6 col-md-3">
+                              <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}"> Reports {{ compute_list[node]['hypervisor']['hypervisor_hostname']}}</button>
+                               <div class="modal fade" id="myModal{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}" role="dialog">
+                                <div class="modal-dialog modal-lg">
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Report to System Admin or Your Boss</h4>
+                                      </div>
+                                      <div class="modal-body">
+                                       <form role="form" method="post" action="/?node={{ compute_list[node]['hypervisor']['hypervisor_hostname']}}&ram_used={{ compute_list[node]['hypervisor']['memory_mb_used']}}&ram_total={{ compute_list[node]['hypervisor']['memory_mb']}}&cpu_used={{ compute_list[node]['hypervisor']['vcpus_used'] }}&cpu_total={{ compute_list[node]['hypervisor']['vcpus']  }}&hdd_free={{compute_list[node]['hypervisor']['free_disk_gb']}}&hdd_total={{ compute_list[node]['hypervisor']['local_gb'] }}&instances={{compute_list[node]['hypervisor']['running_vms'] }}">
+                                        <div class="form-group">
+                                          <label for="email">Email address:</label>
+                                          <input type="email" class="form-control" name='email'  id="email" placeholder="email@example.com">
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Send Now!</button>
+                                      </form>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              <div class="panel panel-green" style="margin-bottom: 0px;" >
+                                <div class="panel-heading">
+                                  <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa fa-server fa-3x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">{{compute_list[node]['hypervisor']['running_vms'] }}</div>
+                                        <b>Instances</b>
+                                    </div>
+                                </div>
+                              </div>                              
+                             </div> 
+                             <div class="panel panel-red" style="margin-bottom: 0px;" >
+                                <div class="panel-heading">
+                                  <div class="row">
+                                    <div class="col-xs-3">
+                                        <i class="fa  fa-wifi fa-3x"></i>
+                                    </div>
+                                    <div class="col-xs-9 text-right">
+                                        <div class="huge">{{ compute_list[node]['ip_used'] }}</div>
+                                        <b>IP Public used</b>
+                                    </div>
+                                </div>
+                              </div>
+                              <a href="/instances">
+                                <div class="panel-footer">
+                                    <span class="pull-left">View Details</span>
+                                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                    <div class="clearfix"></div>
+                                </div>
+                              </a>                              
+                             </div> 
+
+      </div>
+
+
+  </div>
+</div>
+
+{% endfor %}
+
+<script type="text/javascript">
+  function start(){
+    {% for node in range(compute_list|length) %}
+    pieChartCPU{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}();
+    pieChartRAM{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}();
+    pieChartHDD{{ compute_list[node]['hypervisor']['hypervisor_hostname']}}();
+    {% endfor %}
+  }
+  window.onload = start;
+</script>
+
+{% endif %}
+
+
+
+
+{% endblock %}

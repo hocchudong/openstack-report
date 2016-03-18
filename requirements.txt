@@ -1,0 +1,9 @@
+flask
+flask-bootstrap
+python-cinderclient
+python-glanceclient
+python-heatclient
+python-keystoneclient
+python-neutronclient
+python-novaclient
+python-memcached

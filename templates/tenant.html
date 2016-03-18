@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><div>
+  <h4> Resource tenant usage </h4>
+  <!-- Table -->
+  <table class="table">
+   <tr>
+    <th>Name</th>
+    <th>Instances</th> 
+    <th>VCPUs(cores)</th>
+    <th>RAMs(Mb)</th>
+    <th>Disks(Gb)</th>
+    <th>Tenant ID</th>
+  </tr>
+  {% for row in range(all_tenant_usage|length) %}
+  	<tr>
+  	<td>{{ all_tenant_usage[row]['name'] }}</td>
+ 	<td>{{ all_tenant_usage[row]['tenant_usage']['instances']}}</td>
+	<td> {{ all_tenant_usage[row]['tenant_usage']['vcpus_used']}}</td>
+ 	<td>{{ all_tenant_usage[row]['tenant_usage']['rams_used'] }}</td>
+ 	<td>{{ all_tenant_usage[row]['tenant_usage']['disks_used'] }}</td>
+  	<td>{{ all_tenant_usage[row]['id'] }}</td>
+  </tr>	
+  
+  {% endfor %}
+
+</div>
+{% endblock %}

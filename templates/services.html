@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><div>
+  <h4> Openstack Service</h4>
+  <!-- Table -->
+  <table class="table">
+   <tr>
+    <th>Name</th>
+    <th>Host</th> 
+    <th>Zone</th>
+    <th>Status</th>
+    <th>State</th>
+    <th>Last Updated</th>
+  </tr>
+  {% for row in range(nova_service|length) %}
+  	<tr>
+  	<td>{{ nova_service[row]['type-name'] }}</td>
+ 	<td>{{ nova_service[row]['hostname'] }}</td>
+ 	<td>{{ nova_service[row]['zone'] }}</td>
+ 	<td>{{ nova_service[row]['status'] }}</td>
+  	<td>{{ nova_service[row]['state'] }}</td>
+  	<td>{{ nova_service[row]['updated_at'] }}</td>
+  </tr>	
+  
+  {% endfor %}
+  </table>
+  <table  class="table">
+  	<tr>
+    <th>Name</th>
+    <th>Host</th> 
+    <th>Status</th>
+    <th>State</th>
+    <th>Last Updated</th>
+  </tr>
+   {% for row in range(neutron_agents|length) %}
+  	<tr>
+  	<td>{{ neutron_agents[row]['agent_type'] }}</td>
+ 	<td>{{ neutron_agents[row]['host'] }}</td>
+ 	<td>{{ neutron_agents[row]['admin_state_up'] }}</td>
+  	<td>{{ neutron_agents[row]['alive'] }}</td>
+  	<td>{{ neutron_agents[row]['started_at'] }}</td>
+  </tr>	
+  {% endfor %}
+  </table>
+    
+</div>
+{% endblock %}
